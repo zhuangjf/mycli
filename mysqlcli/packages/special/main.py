@@ -1,36 +1,59 @@
-from helpers import SpecialCommand, start, end, start_or_end, parse_special_command
+from collections import namedtuple
+from helpers import (start, end)
 import iocommands
-#import dbcommands
-
-__all__ = ['show_help']
+import dbcommands
 
 def show_help(*args):
+    title = None
     header = ['Command', 'Shortcut', 'Description']
     footer = None
-    result = [(x.name, x.shortcut, x.help) for _, x in sorted(CASE_SENSITIVE_COMMANDS.items())]
-    return [(result, header, footer)]
+    result = [(x.name, x.shortcut, x.help) for _, x in sorted(SpecialCommands.commands)]
+    return [(title, result, header, footer)]
 
 
-CASE_SENSITIVE_COMMANDS = {
-        '?': SpecialCommand('\?', '\\?', 'Display this help.', show_help, start),
-        'help': SpecialCommand('\h', '\\?', 'Display this help.', show_help, start),
-        '\h': SpecialCommand('\h', '\\?', 'Display this help.', show_help, start),
-        #'\\r': SpecialCommand('connect', '\\r', 'Reconnect to the server', dbcommands.reconnect, start),
-        'ego': SpecialCommand('ego', '\\G', 'Display results vertically.', iocommands.expanded_output, end)
-        }
+# Meta data about each special command.
+# name - Name of the special command.
+# shortcut - Short form that typically starts with a slash,
+# help - docstring for the command,
+# handler - function or sql to execute to produce results for the special cmd,
+# detector - a function  to detect if an sql command matches the command
+SpecialCommand = namedtuple('SpecialCommand',
+        ['name', 'shortcut', 'help', 'handler', 'detector'])
 
-def execute(executor, sql):
-    """Execute a special command and return the results. If the special command
-    is not supported a KeyError will be raised.
-    """
-    special_command = detect_special_command(sql)
-    if special_command is None:
-        return None
+class SpecialCommands(object):
+    commands = [
+            SpecialCommand('?', '\\?', 'Display this help.', show_help, start),
+            SpecialCommand('help', '\h', 'Display this help.', show_help, start),
+            SpecialCommand('connect', '\\r', 'Reconnect to the server', dbcommands.reconnect, start),
+            SpecialCommand('use', '\\u', 'Change database.', dbcommands.reconnect, start),
+            SpecialCommand('\\G', '\\G', 'Display results vertically.', iocommands.expanded_output, end),
+            ]
 
-    CASE_SENSITIVE_COMMANDS
+    def detect(self, statement):
+        for command in self.commands:
+            if (command.detector(command.name, statement) or
+                    command.detector(command.shortcut, statement)):
+                return command
 
+    def execute(self, cur, sql, executor=None):
+        """Execute a special command and return the results. If the special command
+        is not supported None will be returned.
 
+        executor - An object that honors a connect() method. This is used by
+        \\r in mysql or \c in postgres.
+        """
 
+        command = self.detect(sql)
+        if command is None:
+            return None
 
-if __name__ == '__main__':
-    print show_help()
+        handler = command.handler
+        if callable(handler):
+            return handler(cur, sql, executor)
+        elif isinstance(handler, str):
+            cur.execute(handler)
+            if cur.description:
+                headers = [x[0] for x in cur.description]
+                return [(None, cur, headers, cur.statusmessage)]
+            else:
+                return [(None, None, None, cur.statusmessage)]
