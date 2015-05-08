@@ -11,9 +11,10 @@ SpecialCommand = namedtuple('SpecialCommand',
 
 def detect_special_command(statement):
     from main import CASE_SENSITIVE_COMMANDS
-    for command in CASE_SENSITIVE_COMMANDS:
-        if command.detector(command.shortcut, statement):
-            return command
+    for _, command in sorted(CASE_SENSITIVE_COMMANDS.items()):
+        if (command.detector(command.name, statement) or
+                command.detector(command.shortcut, statement)):
+            return command.name
 
 def start(command, statement):
     return statement.startswith(command)
@@ -25,5 +26,4 @@ def start_or_end(command, statement):
     return statement.startswith(command) or statement.endswith(command)
 
 if __name__ == '__main__':
-    c, s, h, hand, detect = detect_special_command('select * from blah\G')
-    print c, s
+    print detect_special_command('select * from blah\G')
