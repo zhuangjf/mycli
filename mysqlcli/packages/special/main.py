@@ -10,6 +10,8 @@ def show_help(*args):
     result = [(x.name, x.shortcut, x.help) for _, x in sorted(SpecialCommands.commands)]
     return [(title, result, header, footer)]
 
+def stub(*args):
+    raise NotImplementedError
 
 # Meta data about each special command.
 # name - Name of the special command.
@@ -27,6 +29,11 @@ class SpecialCommands(object):
             SpecialCommand('connect', '\\r', 'Reconnect to the server', dbcommands.reconnect, start),
             SpecialCommand('use', '\\u', 'Change database.', dbcommands.reconnect, start),
             SpecialCommand('\\G', '\\G', 'Display results vertically.', iocommands.expanded_output, end),
+            SpecialCommand('\\l', '\\l', 'List all databases.', 'SHOW DATABASES', start),
+            SpecialCommand('\\dt', '\\dt', 'List all tables in current database.', 'SHOW TABLES', start),
+            SpecialCommand('exit', '\\q', 'Exit mysql.', stub, start),
+            SpecialCommand('quit', '\\q', 'Exit mysql.', stub, start),
+            SpecialCommand('rehash', '\\#', 'Rebuild completion hash.', dbcommands.refresh_completions, start),
             ]
 
     def detect(self, statement):

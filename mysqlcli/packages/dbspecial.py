@@ -72,7 +72,7 @@ def sql_name_pattern(pattern):
 
     return schema, relname
 
-def show_help(cur, arg, verbose):  # All the parameters are ignored.
+def show_help(*args):  # All the parameters are ignored.
     headers = ['Command', 'Description']
     result = []
 
