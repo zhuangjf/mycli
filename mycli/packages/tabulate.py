@@ -10,6 +10,7 @@ from platform import python_version_tuple
 from wcwidth import wcswidth
 import re
 import binascii
+import json
 
 
 if python_version_tuple()[0] < "3":
@@ -133,6 +134,13 @@ def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
                          for c, a in zip(cell_values, colaligns)]
     return "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
 
+def _json_row(typ, cell_values, colwidths, colaligns):
+    if typ == "header":
+        global header
+        header = cell_values
+        return ""
+    else:
+        return json.dumps(dict(zip(header, cell_values)))
 
 def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
@@ -256,6 +264,14 @@ _table_formats = {"simple":
                               linebetweenrows=None, linebelow=None,
                               headerrow=DataRow("", "\t", ""),
                               datarow=DataRow("", "\t", ""),
+                              padding=0, with_header_hide=None, with_align=False),
+                  "json":
+                  TableFormat(lineabove=Line("[", "", "", ""),
+                              linebelowheader=None,
+                              linebetweenrows=Line(",", "", "", ""),
+                              linebelow=Line("]", "", "", ""),
+                              headerrow=partial(_json_row, 'header'),
+                              datarow=partial(_json_row, 'data'),
                               padding=0, with_header_hide=None, with_align=False)}
 
 
