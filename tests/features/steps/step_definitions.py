@@ -28,7 +28,19 @@ def step_run_cli(context):
     """
     Run the process using pexpect.
     """
-    context.cli = pexpect.spawnu('mycli')
+    run_args = []
+    if context.conf.get('host', None):
+        run_args.extend(('-h', context.conf['host']))
+    if context.conf.get('user', None):
+        run_args.extend(('-u', context.conf['user']))
+    if context.conf.get('pass', None):
+        run_args.extend(('-p', context.conf['pass']))
+    if context.conf.get('dbname', None):
+        run_args.extend(('-D', context.conf['dbname']))
+
+    cmd_parts = ['mycli'] + run_args
+    cmd = ' '.join(cmd_parts)
+    context.cli = pexpect.spawnu(cmd)
     context.exit_sent = False
 
 

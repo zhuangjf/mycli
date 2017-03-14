@@ -34,13 +34,13 @@ def before_all(context):
         'vi': vi
     }
 
-    if context.conf['pass']:
-        os.environ['PGPASS'] = context.conf['pass']
-    else:
-        if 'PGPASS' in os.environ:
-            del os.environ['PGPASS']
-        if 'PGHOST' in os.environ:
-            del os.environ['PGHOST']
+    # if context.conf['pass']:
+    #     os.environ['PGPASS'] = context.conf['pass']
+    # else:
+    #     if 'PGPASS' in os.environ:
+    #         del os.environ['PGPASS']
+    #     if 'PGHOST' in os.environ:
+    #         del os.environ['PGHOST']
 
     #context.cn = dbutils.create_db(context.conf['host'], context.conf['user'],
     #                               context.conf['pass'],
