@@ -14,21 +14,21 @@ import re
 from behave import given, when, then
 
 
-@given('we have pgcli installed')
+@given('we have mycli installed')
 def step_install_cli(_):
     """
-    Check that pgcli is in installed modules.
+    Check that mycli is in installed modules.
     """
     dists = set([di.key for di in pip.get_installed_distributions()])
-    assert 'pgcli' in dists
+    assert 'mycli' in dists
 
 
-@when('we run pgcli')
+@when('we run mycli')
 def step_run_cli(context):
     """
     Run the process using pexpect.
     """
-    context.cli = pexpect.spawnu('pgcli')
+    context.cli = pexpect.spawnu('mycli')
     context.exit_sent = False
 
 
@@ -37,7 +37,10 @@ def step_wait_prompt(context):
     """
     Make sure prompt is displayed.
     """
-    _expect_exact(context, '{0}> '.format(context.conf['dbname']), timeout=5)
+    dbname = context.conf['dbname']
+    if not dbname:
+        dbname = '(none)'
+    _expect_exact(context, '{0}> '.format(dbname), timeout=5)
 
 
 @when('we send "ctrl + d"')
@@ -208,7 +211,7 @@ def step_refresh_completions(context):
     context.cli.sendline('\\refresh')
 
 
-@then('pgcli exits')
+@then('mycli exits')
 def step_wait_exit(context):
     """
     Make sure the cli exits.
@@ -216,12 +219,15 @@ def step_wait_exit(context):
     _expect_exact(context, pexpect.EOF, timeout=5)
 
 
-@then('we see pgcli prompt')
+@then('we see mycli prompt')
 def step_see_prompt(context):
     """
     Wait to see the prompt.
     """
-    _expect_exact(context, '{0}> '.format(context.conf['dbname']), timeout=5)
+    dbname = context.conf['dbname']
+    if not dbname:
+        dbname = '(none)'
+    _expect_exact(context, '{0}> '.format(dbname), timeout=5)
 
 
 @then('we see help output')
