@@ -69,7 +69,7 @@ def step_send_help(context):
     """
     Send \? to see help.
     """
-    context.cli.sendline('\?')
+    context.cli.sendline('\\?')
 
 @when('we save a named query')
 def step_save_named_query(context):
