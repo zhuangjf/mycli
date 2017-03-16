@@ -115,6 +115,9 @@ def step_db_drop(context):
     context.cli.sendline('drop database {0};'.format(
         context.conf['dbname_tmp']))
 
+    _expect_exact(context, 'Do you want to proceed? (y/n):', timeout=2)
+    context.cli.sendline('y')
+
 
 @when('we create table')
 def step_create_table(context):
@@ -262,7 +265,7 @@ def step_see_db_dropped(context):
     """
     Wait to see drop database output.
     """
-    _expect_exact(context, 'DROP DATABASE', timeout=2)
+    _expect_exact(context, 'Query OK, 0 rows affected', timeout=2)
 
 
 @then('we see database connected')
@@ -270,7 +273,7 @@ def step_see_db_connected(context):
     """
     Wait to see drop database output.
     """
-    _expect_exact(context, 'You are now connected to database "mycli_behave_tests" as user "root"', timeout=2)
+    _expect_exact(context, 'are now connected to database', timeout=2)
 
 @then('we see table created')
 def step_see_table_created(context):
