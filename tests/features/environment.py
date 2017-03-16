@@ -29,6 +29,7 @@ def before_all(context):
         'host': context.config.userdata.get('my_test_host', 'localhost'),
         'user': context.config.userdata.get('my_test_user', 'postgres'),
         'pass': context.config.userdata.get('my_test_pass', None),
+        'cli_command': context.config.userdata.get('my_cli_command', None) or 'python -m mycli.main',
         'dbname': None,
         'dbname_tmp': None,
         'vi': vi

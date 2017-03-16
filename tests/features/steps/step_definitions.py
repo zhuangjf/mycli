@@ -37,9 +37,11 @@ def step_run_cli(context):
         run_args.extend(('-p', context.conf['pass']))
     if context.conf.get('dbname', None):
         run_args.extend(('-D', context.conf['dbname']))
+    cli_cmd = context.conf.get('cli_command', None) or 'python -m mycli.main'
 
-    cmd_parts = ['mycli'] + run_args
+    cmd_parts = [cli_cmd] + run_args
     cmd = ' '.join(cmd_parts)
+    print(cmd)
     context.cli = pexpect.spawnu(cmd)
     context.exit_sent = False
 
