@@ -170,7 +170,7 @@ def step_db_connect_test(context):
     Send connect to database.
     """
     db_name = context.conf['dbname']
-    context.cli.sendline('\\connect {0}'.format(db_name))
+    context.cli.sendline('use {0}'.format(db_name))
 
 
 @when('we start external editor providing a file name')
@@ -209,12 +209,12 @@ def step_edit_done_sql(context):
         os.remove(context.editor_file_name)
 
 
-@when('we connect to postgres')
+@when('we connect to mysql')
 def step_db_connect_postgres(context):
     """
     Send connect to database.
     """
-    context.cli.sendline('\\connect postgres')
+    context.cli.sendline('use mysql')
 
 
 @when('we refresh completions')
@@ -255,8 +255,7 @@ def step_see_db_created(context):
     """
     Wait to see create database output.
     """
-    _expect_exact(context, 'CREATE DATABASE', timeout=2)
-
+    _expect_exact(context, 'OK, 1 row affected', timeout=2)
 
 @then('we see database dropped')
 def step_see_db_dropped(context):
@@ -271,8 +270,7 @@ def step_see_db_connected(context):
     """
     Wait to see drop database output.
     """
-    _expect_exact(context, 'You are now connected to database', timeout=2)
-
+    _expect_exact(context, 'You are now connected to database "mycli_behave_tests" as user "root"', timeout=2)
 
 @then('we see table created')
 def step_see_table_created(context):
@@ -362,6 +360,7 @@ def _expect_exact(context, expected, timeout):
     except:
         # Strip color codes out of the output.
         actual = re.sub(r'\x1b\[([0-9A-Za-z;?])+[m|K]?', '', context.cli.before)
+        with open('/tmp/dmtest', 'a') as f: f.write(actual)
         raise Exception('Expected:\n---\n{0!r}\n---\n\nActual:\n---\n{1!r}\n---'.format(
             expected,
             actual))

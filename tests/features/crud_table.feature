@@ -19,5 +19,5 @@ Feature: manipulate tables:
       then we see record deleted
       when we drop table
       then we see table dropped
-      when we connect to postgres
+      when we connect to mysql
       then we see database connected
