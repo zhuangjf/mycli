@@ -19,9 +19,6 @@ def step_install_cli(_):
     """
     Check that mycli is in installed modules.
     """
-    dists = set([di.key for di in pip.get_installed_distributions()])
-    assert 'mycli' in dists
-
 
 @when('we run mycli')
 def step_run_cli(context):
@@ -37,12 +34,12 @@ def step_run_cli(context):
         run_args.extend(('-p', context.conf['pass']))
     if context.conf.get('dbname', None):
         run_args.extend(('-D', context.conf['dbname']))
-    cli_cmd = context.conf.get('cli_command', None) or 'python -m mycli.main'
+    cli_cmd = context.conf.get('cli_command', None) or sys.executable+' -c "import coverage ; coverage.process_startup(); import mycli.main; mycli.main.cli()"'
 
     cmd_parts = [cli_cmd] + run_args
     cmd = ' '.join(cmd_parts)
     print(cmd)
-    context.cli = pexpect.spawnu(cmd)
+    context.cli = pexpect.spawnu(cmd, cwd='..')
     context.exit_sent = False
 
 
@@ -216,7 +213,7 @@ def step_edit_done_sql(context):
 
 
 @when('we connect to mysql')
-def step_db_connect_postgres(context):
+def step_db_connect_mysql(context):
     """
     Send connect to database.
     """
@@ -365,7 +362,6 @@ def _expect_exact(context, expected, timeout):
     except:
         # Strip color codes out of the output.
         actual = re.sub(r'\x1b\[([0-9A-Za-z;?])+[m|K]?', '', context.cli.before)
-        with open('/tmp/dmtest', 'a') as f: f.write(actual)
         raise Exception('Expected:\n---\n{0!r}\n---\n\nActual:\n---\n{1!r}\n---'.format(
             expected,
             actual))

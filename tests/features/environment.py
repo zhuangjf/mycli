@@ -16,6 +16,7 @@ def before_all(context):
     os.environ['COLUMNS'] = "100"
     os.environ['PAGER'] = 'cat'
     os.environ['EDITOR'] = 'nano'
+    os.environ["COVERAGE_PROCESS_START"] = os.getcwd()+"/.coveragerc"
 
     context.exit_sent = False
 
@@ -26,9 +27,9 @@ def before_all(context):
     # Store get params from config.
     context.conf = {
         'host': context.config.userdata.get('my_test_host', 'localhost'),
-        'user': context.config.userdata.get('my_test_user', 'postgres'),
+        'user': context.config.userdata.get('my_test_user', 'root'),
         'pass': context.config.userdata.get('my_test_pass', None),
-        'cli_command': context.config.userdata.get('my_cli_command', None) or 'python -m mycli.main',
+        'cli_command': context.config.userdata.get('my_cli_command', None) or sys.executable+' -c "import coverage ; coverage.process_startup(); import mycli.main; mycli.main.cli()"',
         'dbname': db_name,
         'dbname_tmp': db_name_full + '_tmp',
         'vi': vi
@@ -39,7 +40,6 @@ def before_all(context):
                                    context.conf['dbname'])
 
     context.fixture_data = fixutils.read_fixture_files()
-
 
 def after_all(context):
     """
