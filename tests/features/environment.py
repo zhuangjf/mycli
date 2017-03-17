@@ -16,12 +16,12 @@ def before_all(context):
     os.environ['COLUMNS'] = "100"
     os.environ['PAGER'] = 'cat'
     os.environ['EDITOR'] = 'nano'
-    os.environ["COVERAGE_PROCESS_START"] = os.getcwd()+"/.coveragerc"
+    os.environ["COVERAGE_PROCESS_START"] = os.getcwd()+"/../.coveragerc"
 
     context.exit_sent = False
 
     vi = '_'.join([str(x) for x in sys.version_info[:3]])
-    db_name = context.config.userdata.get('my_test_db', None)
+    db_name = context.config.userdata.get('my_test_db', None) or "mycli_behave_tests"
     db_name_full = '{0}_{1}'.format(db_name, vi)
 
     # Store get params from config.
