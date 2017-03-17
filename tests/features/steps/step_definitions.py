@@ -78,21 +78,21 @@ def step_save_named_query(context):
     """
     Send \ns command
     """
-    context.cli.sendline('\\ns foo SELECT 12345')
+    context.cli.sendline('\\fs foo SELECT 12345')
 
 @when('we use a named query')
 def step_use_named_query(context):
     """
     Send \n command
     """
-    context.cli.sendline('\\n foo')
+    context.cli.sendline('\\f foo')
 
 @when('we delete a named query')
 def step_delete_named_query(context):
     """
     Send \nd command
     """
-    context.cli.sendline('\\nd foo')
+    context.cli.sendline('\\fd foo')
 
 @when('we create database')
 def step_db_create(context):
@@ -157,6 +157,8 @@ def step_delete_from_table(context):
     Send deete from table.
     """
     context.cli.sendline('''delete from a where x = 'yyy';''')
+    _expect_exact(context, 'Do you want to proceed? (y/n):', timeout=2)
+    context.cli.sendline('y')
 
 
 @when('we drop table')
@@ -165,7 +167,8 @@ def step_drop_table(context):
     Send drop table.
     """
     context.cli.sendline('drop table a;')
-
+    _expect_exact(context, 'Do you want to proceed? (y/n):', timeout=2)
+    context.cli.sendline('y')
 
 @when('we connect to test database')
 def step_db_connect_test(context):
@@ -225,7 +228,7 @@ def step_refresh_completions(context):
     """
     Send refresh command.
     """
-    context.cli.sendline('\\refresh')
+    context.cli.sendline('rehash')
 
 
 @then('mycli exits')
@@ -280,7 +283,7 @@ def step_see_table_created(context):
     """
     Wait to see create table output.
     """
-    _expect_exact(context, 'CREATE TABLE', timeout=2)
+    _expect_exact(context, 'Query OK, 0 rows affected', timeout=2)
 
 
 @then('we see record inserted')
@@ -288,15 +291,14 @@ def step_see_record_inserted(context):
     """
     Wait to see insert output.
     """
-    _expect_exact(context, 'INSERT 0 1', timeout=2)
-
+    _expect_exact(context, 'OK, 1 row affected', timeout=2)
 
 @then('we see record updated')
 def step_see_record_updated(context):
     """
     Wait to see update output.
     """
-    _expect_exact(context, 'UPDATE 1', timeout=2)
+    _expect_exact(context, 'OK, 1 row affected', timeout=2)
 
 
 @then('we see data selected')
@@ -305,7 +307,7 @@ def step_see_data_selected(context):
     Wait to see select output.
     """
     _expect_exact(context, 'yyy', timeout=1)
-    _expect_exact(context, 'SELECT 1', timeout=1)
+    _expect_exact(context, '1 row in set', timeout=1)
 
 
 @then('we see record deleted')
@@ -313,7 +315,7 @@ def step_see_data_deleted(context):
     """
     Wait to see delete output.
     """
-    _expect_exact(context, 'DELETE 1', timeout=2)
+    _expect_exact(context, 'OK, 1 row affected', timeout=2)
 
 
 @then('we see table dropped')
@@ -321,7 +323,7 @@ def step_see_table_dropped(context):
     """
     Wait to see drop output.
     """
-    _expect_exact(context, 'DROP TABLE', timeout=2)
+    _expect_exact(context, 'OK, 0 rows affected', timeout=2)
 
 
 @then('we see the named query saved')
