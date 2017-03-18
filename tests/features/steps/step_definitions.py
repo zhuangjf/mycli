@@ -6,10 +6,10 @@ This string is used to call the step in "*.feature" file.
 """
 from __future__ import unicode_literals
 
-import pip
 import pexpect
 import os
 import re
+import sys
 
 from behave import given, when, then
 
@@ -17,8 +17,13 @@ from behave import given, when, then
 @given('we have mycli installed')
 def step_install_cli(_):
     """
-    Check that mycli is in installed modules.
+    Check that mycli can be started.
     """
+    try:
+        import mycli.main
+    except Exception as x:
+        raise Exception("Unable to import mycli.main.", x)
+
 
 @when('we run mycli')
 def step_run_cli(context):
@@ -53,6 +58,7 @@ def step_wait_prompt(context):
     dbname = context.conf['dbname']
     _expect_exact(context, 'mysql {0}@{1}:{2}> '.format(user, host, dbname), timeout=5)
 
+
 @when('we send "ctrl + d"')
 def step_ctrl_d(context):
     """
@@ -69,12 +75,14 @@ def step_send_help(context):
     """
     context.cli.sendline('\\?')
 
+
 @when('we save a named query')
 def step_save_named_query(context):
     """
     Send \ns command
     """
     context.cli.sendline('\\fs foo SELECT 12345')
+
 
 @when('we use a named query')
 def step_use_named_query(context):
@@ -83,12 +91,14 @@ def step_use_named_query(context):
     """
     context.cli.sendline('\\f foo')
 
+
 @when('we delete a named query')
 def step_delete_named_query(context):
     """
     Send \nd command
     """
     context.cli.sendline('\\fd foo')
+
 
 @when('we create database')
 def step_db_create(context):
@@ -165,6 +175,7 @@ def step_drop_table(context):
     context.cli.sendline('drop table a;')
     _expect_exact(context, 'Do you want to proceed? (y/n):', timeout=2)
     context.cli.sendline('y')
+
 
 @when('we connect to test database')
 def step_db_connect_test(context):
@@ -259,6 +270,7 @@ def step_see_db_created(context):
     """
     _expect_exact(context, 'OK, 1 row affected', timeout=2)
 
+
 @then('we see database dropped')
 def step_see_db_dropped(context):
     """
@@ -274,6 +286,7 @@ def step_see_db_connected(context):
     """
     _expect_exact(context, 'are now connected to database', timeout=2)
 
+
 @then('we see table created')
 def step_see_table_created(context):
     """
@@ -288,6 +301,7 @@ def step_see_record_inserted(context):
     Wait to see insert output.
     """
     _expect_exact(context, 'OK, 1 row affected', timeout=2)
+
 
 @then('we see record updated')
 def step_see_record_updated(context):

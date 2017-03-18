@@ -52,6 +52,7 @@ def before_all(context):
 
     context.fixture_data = fixutils.read_fixture_files()
 
+
 def after_all(context):
     """
     Unset env parameters.

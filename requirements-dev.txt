@@ -3,3 +3,4 @@ pytest
 tox
 behave
 pexpect
+coverage==4.3.4
