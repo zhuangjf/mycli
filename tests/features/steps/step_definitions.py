@@ -48,11 +48,10 @@ def step_wait_prompt(context):
     """
     Make sure prompt is displayed.
     """
+    user = context.conf['user']
+    host = context.conf['host']
     dbname = context.conf['dbname']
-    if not dbname:
-        dbname = '(none)'
-    _expect_exact(context, '{0}> '.format(dbname), timeout=5)
-
+    _expect_exact(context, 'mysql {0}@{1}:{2}> '.format(user, host, dbname), timeout=5)
 
 @when('we send "ctrl + d"')
 def step_ctrl_d(context):
@@ -241,10 +240,10 @@ def step_see_prompt(context):
     """
     Wait to see the prompt.
     """
+    user = context.conf['user']
+    host = context.conf['host']
     dbname = context.conf['dbname']
-    if not dbname:
-        dbname = '(none)'
-    _expect_exact(context, '{0}> '.format(dbname), timeout=5)
+    _expect_exact(context, 'mysql {0}@{1}:{2}> '.format(user, host, dbname), timeout=5)
 
 
 @then('we see help output')

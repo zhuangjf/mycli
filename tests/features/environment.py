@@ -24,12 +24,23 @@ def before_all(context):
     db_name = context.config.userdata.get('my_test_db', None) or "mycli_behave_tests"
     db_name_full = '{0}_{1}'.format(db_name, vi)
 
-    # Store get params from config.
+    # Store get params from config/environment variables
     context.conf = {
-        'host': context.config.userdata.get('my_test_host', 'localhost'),
-        'user': context.config.userdata.get('my_test_user', 'root'),
-        'pass': context.config.userdata.get('my_test_pass', None),
-        'cli_command': context.config.userdata.get('my_cli_command', None) or sys.executable+' -c "import coverage ; coverage.process_startup(); import mycli.main; mycli.main.cli()"',
+        'host': context.config.userdata.get(
+            'my_test_host',
+            os.getenv('PYTEST_HOST', 'localhost')
+        ),
+        'user': context.config.userdata.get(
+            'my_test_user',
+            os.getenv('PYTEST_USER', 'root')
+        ),
+        'pass': context.config.userdata.get(
+            'my_test_pass',
+            os.getenv('PYTEST_PASSWORD', None)
+        ),
+        'cli_command': context.config.userdata.get(
+            'my_cli_command', None) or
+            sys.executable+' -c "import coverage ; coverage.process_startup(); import mycli.main; mycli.main.cli()"',
         'dbname': db_name,
         'dbname_tmp': db_name_full + '_tmp',
         'vi': vi
