@@ -19,6 +19,7 @@ def step_install_cli(_):
     """
     Check that mycli can be started.
     """
+    sys.path.append('..')
     try:
         import mycli.main
     except Exception as x:
