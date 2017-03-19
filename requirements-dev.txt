@@ -4,3 +4,4 @@ tox
 behave
 pexpect
 coverage==4.3.4
+twine==1.8.1
