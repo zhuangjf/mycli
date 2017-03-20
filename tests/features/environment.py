@@ -16,7 +16,7 @@ def before_all(context):
     os.environ['COLUMNS'] = "100"
     os.environ['PAGER'] = 'cat'
     os.environ['EDITOR'] = 'ex'
-    os.environ["COVERAGE_PROCESS_START"] = os.getcwd()+"/../.coveragerc"
+    os.environ["COVERAGE_PROCESS_START"] = os.getcwd() + "/../.coveragerc"
 
     context.exit_sent = False
 
@@ -43,7 +43,7 @@ def before_all(context):
             sys.executable+' -c "import coverage ; coverage.process_startup(); import mycli.main; mycli.main.cli()"',
         'dbname': db_name,
         'dbname_tmp': db_name_full + '_tmp',
-        'vi': vi
+        'vi': vi,
     }
 
     context.cn = dbutils.create_db(context.conf['host'], context.conf['user'],
@@ -77,3 +77,8 @@ def after_scenario(context, _):
     if hasattr(context, 'cli') and not context.exit_sent:
         # Terminate nicely.
         context.cli.terminate()
+
+# TODO: uncomment to debug a failure
+# def after_step(context, step):
+#     if step.status == "failed":
+#         import ipdb; ipdb.set_trace()
