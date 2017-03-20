@@ -122,7 +122,7 @@ def step_db_drop(context):
     context.cli.sendline('drop database {0};'.format(
         context.conf['dbname_tmp']))
 
-    _expect_exact(context, 'Do you want to proceed? (y/n):', timeout=2)
+    _expect_exact(context, 'You\'re about to run a destructive command.\r\nDo you want to proceed? (y/n):', timeout=2)
     context.cli.sendline('y')
 
 
@@ -164,7 +164,7 @@ def step_delete_from_table(context):
     Send deete from table.
     """
     context.cli.sendline('''delete from a where x = 'yyy';''')
-    _expect_exact(context, 'Do you want to proceed? (y/n):', timeout=2)
+    _expect_exact(context, 'You\'re about to run a destructive command.\r\nDo you want to proceed? (y/n):', timeout=2)
     context.cli.sendline('y')
 
 
@@ -174,7 +174,7 @@ def step_drop_table(context):
     Send drop table.
     """
     context.cli.sendline('drop table a;')
-    _expect_exact(context, 'Do you want to proceed? (y/n):', timeout=2)
+    _expect_exact(context, 'You\'re about to run a destructive command.\r\nDo you want to proceed? (y/n):', timeout=2)
     context.cli.sendline('y')
 
 
@@ -261,7 +261,7 @@ def step_see_prompt(context):
 @then('we see help output')
 def step_see_help(context):
     for expected_line in context.fixture_data['help_commands.txt']:
-        _expect_exact(context, expected_line, timeout=1)
+        _expect_exact(context, expected_line+'\r\n', timeout=1)
 
 
 @then('we see database created')
@@ -269,7 +269,7 @@ def step_see_db_created(context):
     """
     Wait to see create database output.
     """
-    _expect_exact(context, 'OK, 1 row affected', timeout=2)
+    _expect_exact(context, 'Query OK, 1 row affected\r\n', timeout=2)
 
 
 @then('we see database dropped')
@@ -277,7 +277,7 @@ def step_see_db_dropped(context):
     """
     Wait to see drop database output.
     """
-    _expect_exact(context, 'Query OK, 0 rows affected', timeout=2)
+    _expect_exact(context, 'Query OK, 0 rows affected\r\n', timeout=2)
 
 
 @then('we see database connected')
@@ -285,7 +285,9 @@ def step_see_db_connected(context):
     """
     Wait to see drop database output.
     """
-    _expect_exact(context, 'are now connected to database', timeout=2)
+    _expect_exact(context, 'You are now connected to database "', timeout=2)
+    _expect_exact(context, '"', timeout=2)
+    _expect_exact(context, ' as user "{0}"\r\n'.format(context.conf['user']), timeout=2)
 
 
 @then('we see table created')
@@ -293,7 +295,7 @@ def step_see_table_created(context):
     """
     Wait to see create table output.
     """
-    _expect_exact(context, 'Query OK, 0 rows affected', timeout=2)
+    _expect_exact(context, 'Query OK, 0 rows affected\r\n', timeout=2)
 
 
 @then('we see record inserted')
@@ -301,7 +303,7 @@ def step_see_record_inserted(context):
     """
     Wait to see insert output.
     """
-    _expect_exact(context, 'OK, 1 row affected', timeout=2)
+    _expect_exact(context, 'Query OK, 1 row affected\r\n', timeout=2)
 
 
 @then('we see record updated')
@@ -309,7 +311,7 @@ def step_see_record_updated(context):
     """
     Wait to see update output.
     """
-    _expect_exact(context, 'OK, 1 row affected', timeout=2)
+    _expect_exact(context, 'Query OK, 1 row affected\r\n', timeout=2)
 
 
 @then('we see data selected')
@@ -317,8 +319,7 @@ def step_see_data_selected(context):
     """
     Wait to see select output.
     """
-    _expect_exact(context, 'yyy', timeout=1)
-    _expect_exact(context, '1 row in set', timeout=1)
+    _expect_exact(context, '+-----+\r\n| x   |\r\n|-----|\r\n| yyy |\r\n+-----+\r\n1 row in set\r\n', timeout=1)
 
 
 @then('we see record deleted')
@@ -326,7 +327,7 @@ def step_see_data_deleted(context):
     """
     Wait to see delete output.
     """
-    _expect_exact(context, 'OK, 1 row affected', timeout=2)
+    _expect_exact(context, 'Query OK, 1 row affected\r\n', timeout=2)
 
 
 @then('we see table dropped')
@@ -334,7 +335,7 @@ def step_see_table_dropped(context):
     """
     Wait to see drop output.
     """
-    _expect_exact(context, 'OK, 0 rows affected', timeout=2)
+    _expect_exact(context, 'Query OK, 0 rows affected\r\n', timeout=2)
 
 
 @then('we see the named query saved')
@@ -342,7 +343,7 @@ def step_see_named_query_saved(context):
     """
     Wait to see query saved.
     """
-    _expect_exact(context, 'Saved.', timeout=1)
+    _expect_exact(context, 'Saved.\r\n', timeout=1)
 
 
 @then('we see the named query executed')
