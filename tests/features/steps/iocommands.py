@@ -15,26 +15,27 @@ def step_edit_file(context):
     if os.path.exists(context.editor_file_name):
         os.remove(context.editor_file_name)
     context.cli.sendline('\e {0}'.format(context.editor_file_name))
-    wrappers.expect_exact(context, 'nano', timeout=2)
+    wrappers.expect_exact(context, 'Entering Ex mode.  Type "visual" to go to Normal mode.', timeout=2)
+    wrappers.expect_exact(context, '\r\n:', timeout=2)
 
 
 @when('we type sql in the editor')
 def step_edit_type_sql(context):
+    context.cli.sendline('i')
     context.cli.sendline('select * from abc')
-    # Write the file.
-    context.cli.sendcontrol('o')
-    # Confirm file name sending "enter".
-    context.cli.sendcontrol('m')
+    context.cli.sendline('.')
+    wrappers.expect_exact(context, ':', timeout=2)
 
 
 @when('we exit the editor')
 def step_edit_quit(context):
-    context.cli.sendcontrol('x')
+    context.cli.sendline('x')
+    wrappers.expect_exact(context, "written", timeout=2)
 
 
 @then('we see the sql in prompt')
 def step_edit_done_sql(context):
-    wrappers.expect_exact(context, 'select * from abc', timeout=2)
+    wrappers.expect_exact(context, 'select\x1b[0m \x1b[0;38;5;241m*\x1b[0m \x1b[0;38;5;28;1mfrom\x1b[0m \x1b[0mabc', timeout=2)
     # Cleanup the command line.
     context.cli.sendcontrol('u')
     # Cleanup the edited file.

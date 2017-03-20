@@ -2,7 +2,7 @@ Feature: Special commands
 
   @wip
   Scenario: run refresh command
-     When we run pgcli
+     When we run mycli
       and we wait for prompt
       and we refresh completions
       and we wait for prompt
